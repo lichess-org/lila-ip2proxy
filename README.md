@@ -5,6 +5,13 @@ Webservice to query an IP2Proxy BIN database.
 See https://github.com/niklasf/ip2proxy-rust for a library to read the database
 files.
 
+Usage
+-----
+
+```
+cargo run -- --port 1929 data/IP2PROXY-IP-PROXYTYPE-COUNTRY-REGION-CITY-ISP.SAMPLE.BIN
+```
+
 HTTP API
 --------
 
