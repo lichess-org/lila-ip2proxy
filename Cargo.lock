@@ -354,7 +354,9 @@ dependencies = [
 
 [[package]]
 name = "ip2proxy"
-version = "0.1.0"
+version = "1.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "54830fda296f9f2aaf1ac4fd3852a3a947f5ac4ad185bc9d26cccea61093db94"
 dependencies = [
  "bitflags",
  "byteorder",
