@@ -25,7 +25,7 @@ name | type | description
 --- | --- | ---
 ip | ip | IP address to look up
 
-* 200 Ok
+* `200 Ok`
 
   ```javascript
   {
@@ -38,12 +38,12 @@ ip | ip | IP address to look up
   [More fields available](https://docs.rs/ip2proxy/1.0/ip2proxy/struct.Row.html)
   depending on the columns of the IPProxy BIN database.
 
-* 404 Not found
+* `404 Not found`
 
   Probably not a proxy. Note that an existing record with `-` also means its
   not a proxy.
 
-* 500 Internal Server Error
+* `500 Internal Server Error`
 
   Corrupted database file or unexpected format
 
