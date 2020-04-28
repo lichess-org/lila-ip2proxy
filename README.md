@@ -25,16 +25,27 @@ name | type | description
 --- | --- | ---
 ip | ip | IP address to look up
 
-```javascript
-{
-  "proxy_type": "DCH", // VPN, TOR, DCH, PUB, WEB, SES, -
-  "country_short": "AU", // ISO 3166
-  "country_long": "Australia" // ISO 3166
-}
-```
+* 200 Ok
 
-[More fields available](https://docs.rs/ip2proxy/1.0/ip2proxy/struct.Row.html)
-depending on the columns of the IPProxy BIN database.
+  ```javascript
+  {
+    "proxy_type": "DCH", // VPN, TOR, DCH, PUB, WEB, SES, -
+    "country_short": "AU", // ISO 3166
+    "country_long": "Australia" // ISO 3166
+  }
+  ```
+
+  [More fields available](https://docs.rs/ip2proxy/1.0/ip2proxy/struct.Row.html)
+  depending on the columns of the IPProxy BIN database.
+
+* 404 Not found
+
+  Probably not a proxy. Note that an existing record with `-` also means its
+  not a proxy.
+
+* 500 Internal Server Error
+
+  Corrupted database file or unexpected format
 
 ### `GET /status`
 
