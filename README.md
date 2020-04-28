@@ -50,8 +50,9 @@ ip | ip | IP address to look up
 
 * `404 Not found`
 
-  Probably not a proxy. Note that an existing record with `-` also means its
-  not a proxy.
+  No record for this IP, so probably not a proxy.
+  It appears to be more common that a record exists, but `-` explicitly
+  indicates that it is not a proxy.
 
 * `500 Internal Server Error`
 
