@@ -2,7 +2,7 @@ use std::net::{IpAddr, SocketAddr};
 use std::path::PathBuf;
 use structopt::StructOpt;
 use warp::Filter;
-use serde::Deserialize;
+use serde::{Serialize, Deserialize};
 use ip2proxy::{Columns, Database};
 
 #[derive(StructOpt)]
@@ -36,6 +36,27 @@ async fn query(db: &'static Database, query: Query) -> Result<impl warp::Reply, 
     }
 }
 
+#[derive(Serialize)]
+struct Status {
+    px: u8,
+    day: u8,
+    month: u8,
+    year: u8,
+    rows_ipv4: u32,
+    rows_ipv6: u32,
+}
+
+fn status(db: &'static Database) -> impl::warp::Reply {
+    warp::reply::json(&Status {
+        px: db.header().px(),
+        day: db.header().day(),
+        month: db.header().month(),
+        year: db.header().year(),
+        rows_ipv4: db.header().rows_ipv4(),
+        rows_ipv6: db.header().rows_ipv6(),
+    })
+}
+
 #[tokio::main]
 async fn main() {
     let opt = Opt::from_args();
@@ -43,10 +64,16 @@ async fn main() {
 
     let db: &'static Database = Box::leak(Box::new(Database::open(opt.db).expect("valid bin database")));
 
-    let route = warp::get()
+    let index = warp::path::end()
+        .and(warp::get())
         .map(move || db)
         .and(warp::query::query())
         .and_then(query);
 
-    warp::serve(route).run(bind).await;
+    let status = warp::path!("status")
+        .and(warp::get())
+        .map(move || db)
+        .map(status);
+
+    warp::serve(index.or(status)).run(bind).await;
 }

@@ -28,6 +28,22 @@ ip | ip | IP address to look up
 
 More fields available depending on the columns of the IPProxy BIN database.
 
+### `GET /status`
+
+```
+curl http://localhost:1929/status
+```
+
+```javascript
+{
+  "px": 2, // database format
+  "day": 28,
+  "month": 4,
+  "year":20,
+  "rows_ipv4": 3948749,
+  "rows_ipv6": 4065169
+}
+
 License
 -------
 
