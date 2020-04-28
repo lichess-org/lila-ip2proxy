@@ -36,6 +36,23 @@ async fn query(db: &'static Database, query: Query) -> Result<impl warp::Reply, 
     }
 }
 
+#[derive(Deserialize)]
+struct BatchQuery {
+    #[serde(with = "serde_with::rust::StringWithSeparator::<serde_with::CommaSeparator>")]
+    ips: Vec<IpAddr>,
+}
+
+async fn batch_query(db: &'static Database, query: BatchQuery) -> Result<impl warp::Reply, warp::Rejection> {
+    let mut response = Vec::with_capacity(query.ips.len());
+    for ip in query.ips {
+        response.push(match db.query(ip, Columns::all()) {
+            Ok(row) => row,
+            Err(err) => return Err(warp::reject::custom(DatabaseError(err))),
+        });
+    }
+    Ok(warp::reply::json(&response))
+}
+
 #[derive(Serialize)]
 struct Status {
     px: u8,
@@ -64,16 +81,22 @@ async fn main() {
 
     let db: &'static Database = Box::leak(Box::new(Database::open(opt.db).expect("valid bin database")));
 
-    let index = warp::path::end()
+    let simple = warp::path::end()
         .and(warp::get())
         .map(move || db)
         .and(warp::query::query())
         .and_then(query);
+
+    let batch = warp::path!("batch")
+        .and(warp::get())
+        .map(move || db)
+        .and(warp::query::query())
+        .and_then(batch_query);
 
     let status = warp::path!("status")
         .and(warp::get())
         .map(move || db)
         .map(status);
 
-    warp::serve(index.or(status)).run(bind).await;
+    warp::serve(simple.or(batch).or(status)).run(bind).await;
 }

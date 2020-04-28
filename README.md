@@ -33,7 +33,7 @@ curl http://localhost:1929/?ip=1.0.0.1
 
 name | type | description
 --- | --- | ---
-ip | ip | IP address to look up
+ip | string | IP address to look up
 
 * `200 OK`
 
@@ -57,6 +57,39 @@ ip | ip | IP address to look up
 * `500 Internal Server Error`
 
   Corrupted database file or unexpected format
+
+### `GET /batch`
+
+```
+curl http://localhost:1929/batch?ips=1.0.0.1,2a00:1450:4001:809::200e,80.129.73.200
+```
+
+name | type | description
+---- | --- | --
+ips | string | Comma separated list of IP addresses to look up
+
+```javascript
+[
+  {
+    "proxy_type": "DCH",
+    "country_short": "US",
+    "country_long": "United States of America"
+  },
+  {
+    "proxy_type": "DCH",
+    "country_short":"DE",
+    "country_long":"Germany"
+  },
+  {
+    "proxy_type": "-", // not a proxy
+    "country_short": "-",
+    "country_long": "-"
+  }
+]
+```
+
+Response is an array in the same order. Entries can be null, theoretically,
+corresponding to a 404 in the `GET /` endpoint.
 
 ### `GET /status`
 
