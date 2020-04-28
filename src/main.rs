@@ -15,7 +15,7 @@ struct Opt {
     port: u16,
     /// Database file to serve
     #[structopt(parse(from_os_str))]
-    file: PathBuf,
+    db: PathBuf,
 }
 
 #[derive(Deserialize)]
@@ -41,7 +41,7 @@ async fn main() {
     let opt = Opt::from_args();
     let bind = SocketAddr::new(opt.address.parse().expect("valid address"), opt.port);
 
-    let db: &'static Database = Box::leak(Box::new(Database::open(opt.file).expect("valid bin database")));
+    let db: &'static Database = Box::leak(Box::new(Database::open(opt.db).expect("valid bin database")));
 
     let route = warp::get()
         .map(move || db)
