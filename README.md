@@ -8,6 +8,26 @@ files.
 HTTP API
 --------
 
+### `GET /`
+
+```
+curl http://localhost:1929/?ip=1.0.0.1
+```
+
+name | type | description
+--- | --- | ---
+ip | ip | IP address to look up
+
+```javascript
+{
+  "proxy_type": "DCH",
+  "country_short": "AU",
+  "country_long": "Australia"
+}
+```
+
+More fields available depending on the columns of the IPProxy BIN database.
+
 License
 -------
 
