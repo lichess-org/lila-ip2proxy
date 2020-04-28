@@ -5,6 +5,16 @@ Webservice to query an IP2Proxy BIN database. This is a thing wrapper around
 https://github.com/niklasf/ip2proxy-rust, a library to read these database
 files.
 
+License
+-------
+
+lila-ip2proxy is licensed under the GNU Affero General Public License, version 3
+or any later version, at your option.
+
+:warning: **This application is not intended to serve the database publically.
+When serving data obtained from https://www.ip2location.com/, carefully
+read the licensing conditions.**
+
 Usage
 -----
 
@@ -63,13 +73,3 @@ curl http://localhost:1929/status
   "rows_ipv6": 4065169
 }
 ```
-
-License
--------
-
-lila-ip2proxy is licensed under the GNU Affero General Public License, version 3
-or any later version, at your option.
-
-This application is not intended to serve the database publically.
-When serving data obtained from https://www.ip2location.com/, carefully
-read the licensing conditions.
