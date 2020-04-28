@@ -20,13 +20,14 @@ ip | ip | IP address to look up
 
 ```javascript
 {
-  "proxy_type": "DCH",
-  "country_short": "AU",
-  "country_long": "Australia"
+  "proxy_type": "DCH", // VPN, TOR, DCH, PUB, WEB, SES, -
+  "country_short": "AU", // ISO 3166
+  "country_long": "Australia" // ISO 3166
 }
 ```
 
-More fields available depending on the columns of the IPProxy BIN database.
+[More fields available](https://docs.rs/ip2proxy/1.0/ip2proxy/struct.Row.html)
+depending on the columns of the IPProxy BIN database.
 
 ### `GET /status`
 
@@ -37,12 +38,13 @@ curl http://localhost:1929/status
 ```javascript
 {
   "px": 2, // database format
-  "day": 28,
-  "month": 4,
-  "year":20,
+  "day": 28, // 28th
+  "month": 4, // April
+  "year": 20, // 2020
   "rows_ipv4": 3948749,
   "rows_ipv6": 4065169
 }
+```
 
 License
 -------
