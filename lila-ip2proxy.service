@@ -1,0 +1,15 @@
+[Unit]
+Description=IP2Proxy microservice
+After=network.target
+
+[Service]
+ExecStart=/usr/local/bin/lila-ip2proxy --address 172.16.0.28 --port 1929 /var/local/ip2proxy/IP2PROXY-IP-PROXYTYPE-COUNTRY.BIN
+PrivateTmp=true
+PrivateDevices=true
+DevicePolicy=closed
+CapabilityBoundingSet=
+NoNewPrivileges=true
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
