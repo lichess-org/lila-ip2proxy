@@ -49,7 +49,7 @@ curl http://localhost:1929/status
 License
 -------
 
-lila-i2proxy is licensed under the GNU Affero General Public License, version 3
+lila-ip2proxy is licensed under the GNU Affero General Public License, version 3
 or any later version, at your option.
 
 This application is not intended to serve the database publically.
