@@ -1,8 +1,8 @@
 lila-ip2proxy
 =============
 
-Webservice to query an IP2Proxy BIN database.
-See https://github.com/niklasf/ip2proxy-rust for a library to read the database
+Webservice to query an IP2Proxy BIN database. This is a thing wrapper around
+https://github.com/niklasf/ip2proxy-rust, a library to read these database
 files.
 
 Usage
