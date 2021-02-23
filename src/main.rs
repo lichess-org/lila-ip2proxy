@@ -1,20 +1,20 @@
 use std::net::{IpAddr, SocketAddr};
 use std::path::PathBuf;
-use structopt::StructOpt;
+use clap::Clap;
 use warp::Filter;
 use serde::{Serialize, Deserialize};
 use ip2proxy::{Columns, Database};
 
-#[derive(StructOpt)]
+#[derive(Clap)]
 struct Opt {
     /// Listen on this address
-    #[structopt(long = "address", default_value = "127.0.0.1")]
+    #[clap(long = "address", default_value = "127.0.0.1")]
     address: String,
     /// Listen on this port
-    #[structopt(long = "port", default_value = "1929")]
+    #[clap(long = "port", default_value = "1929")]
     port: u16,
     /// Database file to serve
-    #[structopt(parse(from_os_str))]
+    #[clap(parse(from_os_str))]
     db: PathBuf,
 }
 
@@ -76,7 +76,7 @@ fn status(db: &'static Database) -> impl::warp::Reply {
 
 #[tokio::main]
 async fn main() {
-    let opt = Opt::from_args();
+    let opt = Opt::parse();
     let bind = SocketAddr::new(opt.address.parse().expect("valid address"), opt.port);
 
     let db: &'static Database = Box::leak(Box::new(Database::open(opt.db).expect("valid bin database")));
