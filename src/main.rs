@@ -1,19 +1,16 @@
+use clap::Parser;
+use ip2proxy::{Columns, Database};
+use serde::{Deserialize, Serialize};
 use std::net::{IpAddr, SocketAddr};
 use std::path::PathBuf;
-use clap::Clap;
 use warp::Filter;
-use serde::{Serialize, Deserialize};
-use ip2proxy::{Columns, Database};
 
-#[derive(Clap)]
+#[derive(Parser)]
 struct Opt {
-    /// Listen on this address
-    #[clap(long = "address", default_value = "127.0.0.1")]
-    address: String,
-    /// Listen on this port
-    #[clap(long = "port", default_value = "1929")]
-    port: u16,
-    /// Database file to serve
+    /// Listen on this socket address.
+    #[clap(long, default_value = "127.0.0.1:1929")]
+    bind: SocketAddr,
+    /// Database file to serve.
     #[clap(parse(from_os_str))]
     db: PathBuf,
 }
@@ -26,7 +23,7 @@ struct Query {
 #[derive(Debug)]
 struct DatabaseError(std::io::Error);
 
-impl warp::reject::Reject for DatabaseError { }
+impl warp::reject::Reject for DatabaseError {}
 
 async fn query(db: &'static Database, query: Query) -> Result<impl warp::Reply, warp::Rejection> {
     match db.query(query.ip, Columns::all()) {
@@ -42,7 +39,10 @@ struct BatchQuery {
     ips: Vec<IpAddr>,
 }
 
-async fn batch_query(db: &'static Database, query: BatchQuery) -> Result<impl warp::Reply, warp::Rejection> {
+async fn batch_query(
+    db: &'static Database,
+    query: BatchQuery,
+) -> Result<impl warp::Reply, warp::Rejection> {
     let mut response = Vec::with_capacity(query.ips.len());
     for ip in query.ips {
         response.push(match db.query(ip, Columns::all()) {
@@ -63,23 +63,24 @@ struct Status {
     rows_ipv6: u32,
 }
 
-fn status(db: &'static Database) -> impl::warp::Reply {
+fn status(db: &'static Database) -> impl ::warp::Reply {
     warp::reply::json(&Status {
-        px: db.header().px(),
-        day: db.header().day(),
-        month: db.header().month(),
-        year: db.header().year(),
-        rows_ipv4: db.header().rows_ipv4(),
-        rows_ipv6: db.header().rows_ipv6(),
+        px: db.package_version(),
+        day: db.day(),
+        month: db.month(),
+        year: db.year(),
+        rows_ipv4: db.rows_ipv4(),
+        rows_ipv6: db.rows_ipv6(),
     })
 }
 
 #[tokio::main]
 async fn main() {
     let opt = Opt::parse();
-    let bind = SocketAddr::new(opt.address.parse().expect("valid address"), opt.port);
 
-    let db: &'static Database = Box::leak(Box::new(Database::open(opt.db).expect("valid bin database")));
+    let db: &'static Database = Box::leak(Box::new(
+        Database::open(opt.db).expect("valid bin database"),
+    ));
 
     let simple = warp::path::end()
         .and(warp::get())
@@ -98,5 +99,5 @@ async fn main() {
         .map(move || db)
         .map(status);
 
-    warp::serve(simple.or(batch).or(status)).run(bind).await;
+    warp::serve(simple.or(batch).or(status)).run(opt.bind).await;
 }
