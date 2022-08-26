@@ -7,9 +7,7 @@ use axum::{extract::Query, http::StatusCode, routing::get, Json, Router};
 use clap::Parser;
 use ip2proxy::{Columns, Database, Row};
 use serde::{Deserialize, Serialize};
-use serde_with::serde_as;
-use serde_with::StringWithSeparator;
-use serde_with::formats::CommaSeparator;
+use serde_with::{formats::CommaSeparator, serde_as, StringWithSeparator};
 
 #[derive(Parser)]
 struct Opt {
