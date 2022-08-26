@@ -7,6 +7,9 @@ use axum::{extract::Query, http::StatusCode, routing::get, Json, Router};
 use clap::Parser;
 use ip2proxy::{Columns, Database, Row};
 use serde::{Deserialize, Serialize};
+use serde_with::serde_as;
+use serde_with::StringWithSeparator;
+use serde_with::formats::CommaSeparator;
 
 #[derive(Parser)]
 struct Opt {
@@ -33,9 +36,10 @@ async fn simple_query(
         .ok_or(StatusCode::NOT_FOUND)
 }
 
+#[serde_as]
 #[derive(Deserialize)]
 struct BatchQuery {
-    #[serde(with = "serde_with::rust::StringWithSeparator::<serde_with::CommaSeparator>")]
+    #[serde_as(as = "StringWithSeparator::<CommaSeparator, IpAddr>")]
     ips: Vec<IpAddr>,
 }
 
