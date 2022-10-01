@@ -1,6 +1,7 @@
 [Unit]
 Description=IP2Proxy microservice
-After=network.target
+After=sys-subsystem-net-devices-eth1.device
+BindsTo=sys-subsystem-net-devices-eth1.device
 
 [Service]
 ExecStart=/usr/local/bin/lila-ip2proxy --address 172.16.0.28 --port 1929 /var/local/ip2proxy/IP2PROXY-IP-PROXYTYPE-COUNTRY.BIN
