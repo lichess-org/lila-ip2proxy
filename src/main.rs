@@ -4,7 +4,7 @@ use std::{
 };
 
 use axum::{extract::Query, http::StatusCode, routing::get, Json, Router};
-use clap::Parser;
+use clap::{builder::PathBufValueParser, Parser};
 use ip2proxy::{Columns, Database, Row};
 use serde::{Deserialize, Serialize};
 use serde_with::{formats::CommaSeparator, serde_as, StringWithSeparator};
@@ -12,10 +12,10 @@ use serde_with::{formats::CommaSeparator, serde_as, StringWithSeparator};
 #[derive(Parser)]
 struct Opt {
     /// Listen on this socket address.
-    #[clap(long, default_value = "127.0.0.1:1929")]
+    #[arg(long, default_value = "127.0.0.1:1929")]
     bind: SocketAddr,
     /// Database file to serve.
-    #[clap(parse(from_os_str))]
+    #[arg(value_parser = PathBufValueParser::new())]
     db: PathBuf,
 }
 
