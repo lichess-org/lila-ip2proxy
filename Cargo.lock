@@ -486,13 +486,13 @@ dependencies = [
 
 [[package]]
 name = "ip2proxy"
-version = "2.0.0"
+version = "2.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d9ec10cb05ebdeef09ba48ce313f3240d84e85dee52d33953d96f53149b6f7c8"
+checksum = "f94f9894939ab67dbf0968cc19d1d2de0ec0bb0a9c882dbe928f6573a0a01213"
 dependencies = [
  "bitflags",
  "byteorder",
- "positioned-io-preview",
+ "positioned-io",
  "serde",
 ]
 
@@ -708,10 +708,10 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8b870d8c151b6f2fb93e84a13146138f05d02ed11c7e7c54f8826aaaf7c9f184"
 
 [[package]]
-name = "positioned-io-preview"
-version = "0.3.5"
+name = "positioned-io"
+version = "0.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "aef08a4c617244dc541127a9c5dc88e4571eb78402b0355371c55bee5c540abd"
+checksum = "09b9485cf7f528baf34edd811ec8283a168864912e11d0b7d3e0510738761114"
 dependencies = [
  "byteorder",
  "libc",
