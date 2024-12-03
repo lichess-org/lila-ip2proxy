@@ -8,6 +8,7 @@ use clap::{builder::PathBufValueParser, Parser};
 use ip2proxy::{Columns, Database, Row};
 use serde::{Deserialize, Serialize};
 use serde_with::{formats::CommaSeparator, serde_as, StringWithSeparator};
+use tokio::net::TcpListener;
 
 #[derive(Parser)]
 struct Opt {
@@ -87,8 +88,6 @@ async fn main() {
         .route("/batch", get(move |query| batch_query(db, query)))
         .route("/status", get(move || status(db)));
 
-    axum::Server::bind(&opt.bind)
-        .serve(app.into_make_service())
-        .await
-        .expect("bind");
+    let listener = TcpListener::bind(opt.bind).await.expect("bind");
+    axum::serve(listener, app).await.expect("serve");
 }
