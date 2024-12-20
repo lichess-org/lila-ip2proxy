@@ -1,19 +1,18 @@
 [package]
 name = "lila-ip2proxy"
-version = "1.0.0"
 publish = false
 description = "Webservice to query an IP2Proxy BIN database"
 repository = "https://github.com/lichess-org/lila-ip2proxy"
 readme = "README.md"
 license = "AGPL-3.0+"
-authors = ["Niklas Fiekas <niklas.fiekas@backscattering.de>"]
 keywords = ["ip", "proxy", "geolocation", "lichess"]
 edition = "2021"
 
 [dependencies]
-axum = "0.7"
+axum = "0.8.0-rc.1"
 tokio = { version = "1", features = ["full"] }
 serde =  { version = "1", features = ["derive"] }
 serde_with = "3"
 clap = { version = "4", features = ["derive", "deprecated"] }
 ip2proxy = { version = "2", features = ["serde"] }
+listenfd = "1"

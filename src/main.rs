@@ -6,6 +6,7 @@ use std::{
 use axum::{extract::Query, http::StatusCode, routing::get, Json, Router};
 use clap::{builder::PathBufValueParser, Parser};
 use ip2proxy::{Columns, Database, Row};
+use listenfd::ListenFd;
 use serde::{Deserialize, Serialize};
 use serde_with::{formats::CommaSeparator, serde_as, StringWithSeparator};
 use tokio::net::TcpListener;
@@ -88,6 +89,16 @@ async fn main() {
         .route("/batch", get(move |query| batch_query(db, query)))
         .route("/status", get(move || status(db)));
 
-    let listener = TcpListener::bind(opt.bind).await.expect("bind");
+    let listener = match ListenFd::from_env()
+        .take_tcp_listener(0)
+        .expect("tcp listener")
+    {
+        Some(std_listener) => {
+            std_listener.set_nonblocking(true).expect("set nonblocking");
+            TcpListener::from_std(std_listener).expect("listener")
+        }
+        None => TcpListener::bind(&opt.bind).await.expect("bind"),
+    };
+
     axum::serve(listener, app).await.expect("serve");
 }
