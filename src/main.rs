@@ -9,7 +9,11 @@ use ip2proxy::{Columns, Database, Row};
 use listenfd::ListenFd;
 use serde::{Deserialize, Serialize};
 use serde_with::{formats::CommaSeparator, serde_as, StringWithSeparator};
+use tikv_jemallocator::Jemalloc;
 use tokio::net::TcpListener;
+
+#[global_allocator]
+static GLOBAL: Jemalloc = Jemalloc;
 
 #[derive(Parser)]
 struct Opt {
