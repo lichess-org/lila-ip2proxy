@@ -1,0 +1,11 @@
+target/
+.git/
+.gitignore
+.dockerignore
+Dockerfile
+*.md
+LICENSE
+*.sh
+*.service
+*.socket
+data/
