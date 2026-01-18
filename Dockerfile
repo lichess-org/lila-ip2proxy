@@ -24,7 +24,6 @@ RUN --mount=type=cache,target=/usr/local/cargo/registry,sharing=locked \
 
 FROM debian:trixie-slim AS runtime
 
-ARG IP2PROXY_TOKEN
 ARG IP2PROXY_FILE=PX2BIN
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -38,9 +37,10 @@ COPY --from=build --chown=lichess:lichess /app/target/release/lila-ip2proxy /usr
 COPY --chown=root:root update-ip2proxy.sh /usr/local/bin/update-ip2proxy.sh
 RUN chmod +x /usr/local/bin/update-ip2proxy.sh
 
-RUN mkdir -p /data && \
+RUN --mount=type=secret,id=IP2PROXY_TOKEN \
+    mkdir -p /data && \
     LILA_IP2PROXY_DATA_DIR=/data \
-    LILA_IP2PROXY_UPDATE_TOKEN="$IP2PROXY_TOKEN" \
+    LILA_IP2PROXY_UPDATE_TOKEN="$(cat /run/secrets/IP2PROXY_TOKEN)" \
     LILA_IP2PROXY_UPDATE_FILE="$IP2PROXY_FILE" \
     /usr/local/bin/update-ip2proxy.sh && \
     chown -R lichess:lichess /data

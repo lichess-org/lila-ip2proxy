@@ -52,7 +52,7 @@ jobs:
           context: .
           push: true
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.tag.outputs.tag }}
-          build-args: |
+          secrets: |
             IP2PROXY_TOKEN=${{ secrets.IP2PROXY_TOKEN }}
 
       - name: Notify Zulip on failure
