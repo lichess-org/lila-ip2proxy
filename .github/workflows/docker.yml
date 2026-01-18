@@ -8,15 +8,6 @@ on:
   pull_request:
     branches: [main]
   workflow_dispatch:
-    inputs:
-      tag:
-        description: "Image tag"
-        required: true
-        default: "stage"
-        type: choice
-        options:
-          - stage
-          - latest
 
 env:
   REGISTRY: ghcr.io
@@ -54,13 +45,14 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          push: true
+          push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.tag.outputs.tag }}
+          target: ${{ github.event_name == 'pull_request' && 'build' || '' }}
           secrets: |
             IP2PROXY_TOKEN=${{ secrets.IP2PROXY_TOKEN }}
 
       - name: Notify Zulip on failure
-        if: failure()
+        if: failure() && (github.event_name == 'schedule' || (github.event_name == 'push' && github.ref == 'refs/heads/main'))
         uses: zulip/github-actions-zulip/send-message@v1
         with:
           api-key: ${{ secrets.ZULIP_INFRA_BOT_API_KEY }}
