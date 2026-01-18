@@ -20,8 +20,7 @@ struct Opt {
     /// Listen on this socket address.
     #[arg(long, default_value = "127.0.0.1:1929", env = "LILA_IP2PROXY_BIND")]
     bind: SocketAddr,
-
-    /// Path to the IP2Proxy BIN database file.
+    /// Database file to serve.
     #[arg(long, env = "LILA_IP2PROXY_DB")]
     db: PathBuf,
 }
@@ -87,7 +86,7 @@ async fn main() {
     let opt = Opt::parse();
 
     let db: &'static Database =
-        Box::leak(Box::new(Database::open(&opt.db).expect("open bin database")));
+        Box::leak(Box::new(Database::open(opt.db).expect("open bin database")));
 
     let app = Router::new()
         .route("/", get(move |query| simple_query(db, query)))
