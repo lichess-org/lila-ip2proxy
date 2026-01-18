@@ -6,6 +6,7 @@ Dockerfile
 *.md
 LICENSE
 *.sh
+!update-ip2proxy.sh
 *.service
 *.socket
 data/
