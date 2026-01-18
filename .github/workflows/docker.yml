@@ -1,7 +1,11 @@
 name: Build and Push Container
 
 on:
+  schedule:
+    - cron: '0 0 * * *'  # Midnight UTC daily
   push:
+    branches: [main]
+  pull_request:
     branches: [main]
   workflow_dispatch:
     inputs:
@@ -50,3 +54,17 @@ jobs:
           context: .
           push: true
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.tag.outputs.tag }}
+          secrets: |
+            IP2PROXY_TOKEN=${{ secrets.IP2PROXY_TOKEN }}
+
+      - name: Notify Zulip on failure
+        if: failure()
+        uses: zulip/github-actions-zulip/send-message@v1
+        with:
+          api-key: ${{ secrets.ZULIP_INFRA_BOT_API_KEY }}
+          email: ${{ secrets.ZULIP_INFRA_BOT_EMAIL }}
+          organization-url: ${{ secrets.ZULIP_INFRA_BOT_ORGANIZATION_URL }}
+          to: ${{ secrets.ZULIP_INFRA_BOT_STREAM }}
+          type: ${{ secrets.ZULIP_INFRA_BOT_TYPE }}
+          topic: 'log'
+          content: ':x: lila-ip2proxy build failed: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'
