@@ -2,7 +2,7 @@ name: Build and Push Container
 
 on:
   schedule:
-    - cron: '0 0 * * *'  # Midnight UTC daily
+    - cron: "0 0 * * *" # Midnight UTC daily
   push:
     branches: [main]
   pull_request:
@@ -66,5 +66,5 @@ jobs:
           organization-url: ${{ secrets.ZULIP_INFRA_BOT_ORGANIZATION_URL }}
           to: ${{ secrets.ZULIP_INFRA_BOT_STREAM }}
           type: ${{ secrets.ZULIP_INFRA_BOT_TYPE }}
-          topic: 'log'
-          content: ':x: lila-ip2proxy build failed: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'
+          topic: "log"
+          content: ":failfish: lila-ip2proxy build failed: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
