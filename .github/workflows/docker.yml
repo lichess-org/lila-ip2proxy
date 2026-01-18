@@ -5,6 +5,8 @@ on:
     - cron: '0 0 * * *'  # Midnight UTC daily
   push:
     branches: [main]
+  pull_request:
+    branches: [main]
   workflow_dispatch:
     inputs:
       tag:
