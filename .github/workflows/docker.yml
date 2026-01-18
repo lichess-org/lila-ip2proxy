@@ -1,12 +1,10 @@
-name: Build and Push Container
+name: Build and (maybe) Push Container
 
 on:
   schedule:
     - cron: "0 0 * * *" # Midnight UTC daily
   push:
-    branches: [main]
   pull_request:
-    branches: [main]
   workflow_dispatch:
 
 env:
