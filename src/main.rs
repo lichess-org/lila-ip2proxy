@@ -1,7 +1,6 @@
 use std::{
     net::{IpAddr, SocketAddr},
     path::PathBuf,
-    time::Duration,
 };
 
 use axum::{extract::Query, http::StatusCode, routing::get, Json, Router};
@@ -12,12 +11,9 @@ use serde::{Deserialize, Serialize};
 use serde_with::{formats::CommaSeparator, serde_as, StringWithSeparator};
 use tikv_jemallocator::Jemalloc;
 use tokio::net::{TcpListener, UnixListener};
-use tracing::{error, info};
 
 #[global_allocator]
 static GLOBAL: Jemalloc = Jemalloc;
-
-const DB_FILENAME: &str = "IP2PROXY-IP-PROXYTYPE-COUNTRY.BIN";
 
 #[derive(Parser, Debug)]
 struct Opt {
@@ -25,13 +21,9 @@ struct Opt {
     #[arg(long, default_value = "127.0.0.1:1929", env = "LILA_IP2PROXY_BIND")]
     bind: SocketAddr,
 
-    /// Directory containing the database file.
-    #[arg(long, env = "LILA_IP2PROXY_DATA_DIR")]
-    data_dir: PathBuf,
-
-    /// Update interval (e.g. "1d", "12h", "30m"). Omit to disable.
-    #[arg(long, env = "LILA_IP2PROXY_UPDATE_INTERVAL", value_parser = humantime::parse_duration)]
-    update_interval: Option<Duration>,
+    /// Path to the IP2Proxy BIN database file.
+    #[arg(long, env = "LILA_IP2PROXY_DB")]
+    db: PathBuf,
 }
 
 #[derive(Deserialize)]
@@ -90,59 +82,12 @@ async fn status(db: &'static Database) -> Json<Status> {
     })
 }
 
-async fn run_update_script() -> bool {
-    info!("Starting database update");
-
-    match tokio::process::Command::new("/usr/local/bin/update-ip2proxy.sh")
-        .status()
-        .await
-    {
-        Ok(status) if status.success() => {
-            info!("Database update successful");
-            true
-        }
-        Ok(status) => {
-            error!("Update script failed with status: {}", status);
-            false
-        }
-        Err(e) => {
-            error!("Failed to execute update script: {}", e);
-            false
-        }
-    }
-}
-
-async fn update_task(interval: Duration) {
-    loop {
-        tokio::time::sleep(interval).await;
-
-        if run_update_script().await {
-            info!("Exiting for restart with new database");
-            std::process::exit(0);
-        }
-    }
-}
-
 #[tokio::main]
 async fn main() {
-    tracing_subscriber::fmt::init();
-
     let opt = Opt::parse();
-    let db_path = opt.data_dir.join(DB_FILENAME);
-
-    if !db_path.exists() {
-        info!("Database file not found, downloading before startup");
-        if !run_update_script().await {
-            panic!("Failed to download initial database");
-        }
-    }
 
     let db: &'static Database =
-        Box::leak(Box::new(Database::open(&db_path).expect("open bin database")));
-
-    if let Some(interval) = opt.update_interval {
-        tokio::spawn(update_task(interval));
-    }
+        Box::leak(Box::new(Database::open(&opt.db).expect("open bin database")));
 
     let app = Router::new()
         .route("/", get(move |query| simple_query(db, query)))

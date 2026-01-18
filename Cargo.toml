@@ -17,9 +17,6 @@ clap = { version = "4", features = ["derive", "deprecated", "env"] }
 ip2proxy = { version = "2", features = ["serde"] }
 listenfd = "1"
 tikv-jemallocator = { version = "0.6", features = ["unprefixed_malloc_on_supported_platforms"] }
-tracing = "0.1"
-tracing-subscriber = { version = "0.3", features = ["env-filter"] }
-humantime = "2"
 
 [profile.release]
 lto = true
