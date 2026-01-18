@@ -1,0 +1,63 @@
+name: Build and Push Container
+
+on:
+  schedule:
+    - cron: "0 0 * * *" # Midnight UTC daily
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set tag
+        id: tag
+        run: |
+          if [ "${{ github.event_name }}" = "push" ] && [ "${{ github.ref }}" = "refs/heads/main" ]; then
+            echo "tag=latest" >> $GITHUB_OUTPUT
+          elif [ "${{ github.event_name }}" = "pull_request" ]; then
+            echo "tag=pr-${{ github.event.pull_request.number }}" >> $GITHUB_OUTPUT
+          else
+            echo "tag=testing" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Log in to Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.tag.outputs.tag }}
+          target: ${{ github.event_name == 'pull_request' && 'build' || '' }}
+          secrets: |
+            IP2PROXY_TOKEN=${{ secrets.IP2PROXY_TOKEN }}
+
+      - name: Notify Zulip on failure
+        if: failure() && (github.event_name == 'schedule' || (github.event_name == 'push' && github.ref == 'refs/heads/main'))
+        uses: zulip/github-actions-zulip/send-message@v1
+        with:
+          api-key: ${{ secrets.ZULIP_INFRA_BOT_API_KEY }}
+          email: ${{ secrets.ZULIP_INFRA_BOT_EMAIL }}
+          organization-url: ${{ secrets.ZULIP_INFRA_BOT_ORGANIZATION_URL }}
+          to: ${{ secrets.ZULIP_INFRA_BOT_STREAM }}
+          type: ${{ secrets.ZULIP_INFRA_BOT_TYPE }}
+          topic: "log"
+          content: ":failfish: lila-ip2proxy build failed: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"

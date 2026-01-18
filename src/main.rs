@@ -4,7 +4,7 @@ use std::{
 };
 
 use axum::{extract::Query, http::StatusCode, routing::get, Json, Router};
-use clap::{builder::PathBufValueParser, Parser};
+use clap::Parser;
 use ip2proxy::{Columns, Database, Row};
 use listenfd::ListenFd;
 use serde::{Deserialize, Serialize};
@@ -15,13 +15,13 @@ use tokio::net::{TcpListener, UnixListener};
 #[global_allocator]
 static GLOBAL: Jemalloc = Jemalloc;
 
-#[derive(Parser)]
+#[derive(Parser, Debug)]
 struct Opt {
     /// Listen on this socket address.
-    #[arg(long, default_value = "127.0.0.1:1929")]
+    #[arg(long, default_value = "127.0.0.1:1929", env = "LILA_IP2PROXY_BIND")]
     bind: SocketAddr,
     /// Database file to serve.
-    #[arg(value_parser = PathBufValueParser::new())]
+    #[arg(long, env = "LILA_IP2PROXY_DB")]
     db: PathBuf,
 }
 
