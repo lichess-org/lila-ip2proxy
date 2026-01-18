@@ -59,10 +59,10 @@ jobs:
         if: failure()
         uses: zulip/github-actions-zulip/send-message@v1
         with:
-          api-key: ${{ secrets.ZULIP_API_KEY }}
-          email: ${{ secrets.ZULIP_BOT_EMAIL }}
-          organization-url: ${{ secrets.ZULIP_ORGANIZATION_URL }}
-          to: ${{ secrets.ZULIP_STREAM }}
-          type: ${{ secrets.ZULIP_TYPE }}
+          api-key: ${{ secrets.ZULIP_INFRA_BOT_API_KEY }}
+          email: ${{ secrets.ZULIP_INFRA_BOT_EMAIL }}
+          organization-url: ${{ secrets.ZULIP_INFRA_BOT_ORGANIZATION_URL }}
+          to: ${{ secrets.ZULIP_INFRA_BOT_STREAM }}
+          type: ${{ secrets.ZULIP_INFRA_BOT_TYPE }}
           topic: 'log'
           content: ':x: lila-ip2proxy build failed: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'
