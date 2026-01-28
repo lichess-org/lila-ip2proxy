@@ -8,7 +8,7 @@ FROM chef AS planner
 COPY . .
 RUN cargo chef prepare
 
-FROM chef as builder
+FROM chef AS builder
 COPY --from=planner /app/recipe.json recipe.json
 RUN cargo chef cook --release
 COPY . .
