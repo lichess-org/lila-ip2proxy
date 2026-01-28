@@ -17,7 +17,8 @@ RUN cargo build --release
 FROM debian:trixie-slim AS download
 ARG IP2PROXY_FILE=PX2BIN
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends wget unzip ca-certificates
+    apt-get install -y --no-install-recommends wget unzip ca-certificates && \
+    rm -rf /var/lib/apt/lists/*
 COPY update-ip2proxy.sh /usr/local/bin/update-ip2proxy.sh
 ARG IP2PROXY_CACHEBUST=0
 RUN --mount=type=secret,id=IP2PROXY_TOKEN \
