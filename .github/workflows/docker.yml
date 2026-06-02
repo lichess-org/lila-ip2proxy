@@ -63,7 +63,7 @@ jobs:
 
       - name: Notify Zulip on failure
         if: failure() && (github.event_name == 'schedule' || (github.event_name == 'push' && github.ref == 'refs/heads/main'))
-        uses: zulip/github-actions-zulip/send-message@v1
+        uses: zulip/github-actions-zulip/send-message@v2
         with:
           api-key: ${{ secrets.ZULIP_INFRA_BOT_API_KEY }}
           email: ${{ secrets.ZULIP_INFRA_BOT_EMAIL }}
